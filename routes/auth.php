@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,25 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // Social Authentication Routes
+    Route::get('auth/google', [SocialAuthController::class, 'redirectToGoogle'])
+        ->name('auth.google');
+    
+    Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
+        ->name('auth.google.callback');
+    
+    Route::get('auth/facebook', [SocialAuthController::class, 'redirectToFacebook'])
+        ->name('auth.facebook');
+    
+    Route::get('auth/facebook/callback', [SocialAuthController::class, 'handleFacebookCallback'])
+        ->name('auth.facebook.callback');
+    
+    Route::get('auth/github', [SocialAuthController::class, 'redirectToGithub'])
+        ->name('auth.github');
+    
+    Route::get('auth/github/callback', [SocialAuthController::class, 'handleGithubCallback'])
+        ->name('auth.github.callback');
 });
 
 Route::middleware('auth')->group(function () {
