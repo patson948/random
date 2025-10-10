@@ -75,6 +75,15 @@ GITHUB_REDIRECT_URI=http://localhost:8000/auth/github/callback
 - **Automatic Registration**: New users are automatically registered
 - **Profile Sync**: User name and avatar are synced from social providers
 
+### Integration with Existing Auth System
+
+- **Unified Authentication**: Social auth works seamlessly with existing login/register system
+- **Role-Based Redirects**: Same redirect logic as traditional authentication
+- **Session Management**: Proper session regeneration and security
+- **Error Handling**: Consistent error messages across all auth methods
+- **Middleware Integration**: Works with existing auth middleware
+- **User Model Compatibility**: Fully integrated with existing User model
+
 ### User Experience
 
 - **Seamless Integration**: Social login buttons are integrated into login and register pages
@@ -144,6 +153,45 @@ To test social authentication:
 5. Complete the OAuth flow with your social provider
 6. Verify that you are logged in and redirected appropriately
 
+### Test Routes
+
+#### Social Auth Test Route
+A test route is available at `/social-auth-test` that returns JSON information about the authenticated user:
+
+```json
+{
+  "authenticated": true,
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "customer",
+    "provider": "google",
+    "google_id": "123456789",
+    "facebook_id": null,
+    "github_id": null,
+    "avatar": "https://example.com/avatar.jpg"
+  }
+}
+```
+
+#### Facebook Debug Route
+A debug route is available at `/facebook-debug` that shows Facebook OAuth configuration:
+
+```json
+{
+  "facebook_config": {
+    "client_id": "Set",
+    "client_secret": "Set",
+    "redirect": "http://localhost:8000/auth/facebook/callback"
+  },
+  "app_url": "http://localhost:8000",
+  "facebook_redirect_url": "http://localhost:8000/auth/facebook/callback"
+}
+```
+
+**Note**: Remove these test routes in production.
+
 ## Troubleshooting
 
 ### Common Issues
@@ -152,6 +200,23 @@ To test social authentication:
 2. **"Client ID not found"**: Verify your environment variables are set correctly
 3. **"Access denied"**: Check that your OAuth app is properly configured
 4. **Database errors**: Ensure the migration has been run successfully
+
+### Facebook-Specific Issues
+
+1. **"App Not Setup"**: Make sure your Facebook app is in "Live" mode, not "Development" mode
+2. **"Invalid OAuth Access Token"**: Check that your Facebook app has the correct permissions
+3. **"Redirect URI Mismatch"**: Ensure the redirect URI in Facebook app settings matches exactly
+4. **"App Review Required"**: Some Facebook permissions require app review for production use
+5. **"Email Permission Denied"**: Make sure your Facebook app requests email permission
+
+### Facebook App Configuration Checklist
+
+- [ ] App is in "Live" mode (not Development)
+- [ ] Facebook Login product is added
+- [ ] Valid OAuth redirect URIs are configured
+- [ ] App ID and App Secret are correctly set in .env
+- [ ] Email and public_profile permissions are requested
+- [ ] App domain is configured (if using custom domain)
 
 ### Debug Mode
 

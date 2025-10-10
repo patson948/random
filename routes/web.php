@@ -78,6 +78,42 @@ Route::get('/checkout-demo', function () {
     return view('checkout');
 });
 
+// Social Auth Test Route (remove in production)
+Route::get('/social-auth-test', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        return response()->json([
+            'authenticated' => true,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'provider' => $user->provider,
+                'google_id' => $user->google_id,
+                'facebook_id' => $user->facebook_id,
+                'github_id' => $user->github_id,
+                'avatar' => $user->avatar,
+            ]
+        ]);
+    }
+    return response()->json(['authenticated' => false]);
+})->name('social.auth.test');
+
+// Facebook OAuth Debug Route (remove in production)
+Route::get('/facebook-debug', function () {
+    $config = config('services.facebook');
+    return response()->json([
+        'facebook_config' => [
+            'client_id' => $config['client_id'] ? 'Set' : 'Not Set',
+            'client_secret' => $config['client_secret'] ? 'Set' : 'Not Set',
+            'redirect' => $config['redirect'],
+        ],
+        'app_url' => config('app.url'),
+        'facebook_redirect_url' => route('auth.facebook.callback'),
+    ]);
+})->name('facebook.debug');
+
 Route::get('/payment-demo', function () {
     return view('payment');
 });

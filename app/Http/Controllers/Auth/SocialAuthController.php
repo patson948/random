@@ -27,6 +27,7 @@ class SocialAuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
+            \Log::info('Google OAuth Success: ' . $googleUser->getEmail());
             
             return $this->handleSocialCallback($googleUser, 'google');
         } catch (\Exception $e) {
@@ -40,7 +41,9 @@ class SocialAuthController extends Controller
      */
     public function redirectToFacebook()
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('facebook')
+            ->scopes(['email', 'public_profile'])
+            ->redirect();
     }
 
     /**
@@ -50,10 +53,26 @@ class SocialAuthController extends Controller
     {
         try {
             $facebookUser = Socialite::driver('facebook')->user();
+            \Log::info('Facebook OAuth Success: ' . $facebookUser->getEmail());
             
             return $this->handleSocialCallback($facebookUser, 'facebook');
+        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+            \Log::error('Facebook OAuth Invalid State: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Facebook authentication session expired. Please try again.');
+        } catch (\Laravel\Socialite\Two\UserDeniedAccessException $e) {
+            \Log::error('Facebook OAuth Access Denied: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Facebook authentication was cancelled. Please try again.');
         } catch (\Exception $e) {
             \Log::error('Facebook OAuth Error: ' . $e->getMessage());
+            \Log::error('Facebook OAuth Error Details: ' . $e->getTraceAsString());
+            
+            // Check for specific Facebook errors
+            if (str_contains($e->getMessage(), 'Invalid redirect_uri')) {
+                return redirect()->route('login')->with('error', 'Facebook app configuration error. Please contact support.');
+            } elseif (str_contains($e->getMessage(), 'App Not Setup')) {
+                return redirect()->route('login')->with('error', 'Facebook app is not properly configured. Please contact support.');
+            }
+            
             return redirect()->route('login')->with('error', 'Facebook authentication failed. Please try again.');
         }
     }
@@ -87,12 +106,21 @@ class SocialAuthController extends Controller
     private function handleSocialCallback($socialUser, $provider)
     {
         try {
+            \Log::info("Social Auth Callback - Provider: {$provider}");
+            \Log::info("Social User Data: " . json_encode([
+                'id' => $socialUser->getId(),
+                'name' => $socialUser->getName(),
+                'email' => $socialUser->getEmail(),
+                'avatar' => $socialUser->getAvatar(),
+            ]));
+
             // Check if user already exists with this social ID
             $existingUser = User::where($provider . '_id', $socialUser->getId())->first();
 
             if ($existingUser) {
                 // User exists, log them in
                 Auth::login($existingUser);
+                request()->session()->regenerate();
                 return $this->redirectAfterLogin();
             }
 
@@ -108,6 +136,7 @@ class SocialAuthController extends Controller
                 ]);
 
                 Auth::login($userByEmail);
+                request()->session()->regenerate();
                 return $this->redirectAfterLogin();
             }
 
@@ -125,6 +154,7 @@ class SocialAuthController extends Controller
             ]);
 
             Auth::login($newUser);
+            request()->session()->regenerate();
             return $this->redirectAfterLogin();
 
         } catch (\Exception $e) {
@@ -145,17 +175,16 @@ class SocialAuthController extends Controller
             if (!$user->vendor->is_approved) {
                 return redirect()->route('vendor.pending');
             }
-            return redirect()->route('vendor.dashboard');
+            return redirect()->intended('/vendor/dashboard');
         }
 
-        // Check user role and redirect accordingly
-        switch ($user->role) {
-            case 'admin':
-                return redirect()->route('admin.dashboard');
-            case 'vendor':
-                return redirect()->route('vendor.dashboard');
-            default:
-                return redirect()->route('home');
+        // Check user role and redirect accordingly (same logic as AuthenticatedSessionController)
+        if ($user->isAdmin()) {
+            return redirect()->intended('/admin/dashboard');
+        } elseif ($user->isVendor()) {
+            return redirect()->intended('/vendor/dashboard');
         }
+
+        return redirect()->intended('/');
     }
 }
