@@ -123,7 +123,7 @@
                                             <a href="{{ route('admin.products.show', $item->product) }}" class="font-semibold hover:underline">{{ $item->product->name }}</a>
                                             <p class="text-sm text-gray-600 mt-1">{{ $item->product->category->name }}</p>
                                             <p class="text-sm text-gray-600">
-                                                <a href="{{ route('admin.vendors.show', $item->vendor) }}" class="hover:underline">{{ $item->vendor->store_name }}</a>
+                                                <a href="{{ route('admin.vendors.show', $item->vendor) }}" class="hover:underline">{{ $item->vendor->shop_name }}</a>
                                             </p>
                                         </div>
                                         <div class="text-right">

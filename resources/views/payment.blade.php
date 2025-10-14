@@ -175,7 +175,7 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-medium text-sm truncate">{{ $item->product->name }}</h4>
-                                <p class="text-xs text-gray-600">{{ $item->product->vendor->store_name ?? 'Vendor' }}</p>
+                                <p class="text-xs text-gray-600">{{ $item->product->vendor->shop_name ?? 'Vendor' }}</p>
                                 <p class="text-sm font-semibold mt-1">ZMW {{ number_format($item->product->price, 0) }}</p>
                             </div>
                             <span class="text-sm text-gray-600">×{{ $item->quantity }}</span>

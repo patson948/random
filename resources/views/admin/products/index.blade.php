@@ -91,7 +91,7 @@
                     <div class="p-4">
                         <p class="text-xs text-gray-500 mb-1">SKU: {{ $product->sku }}</p>
                         <h3 class="font-semibold mb-2">{{ Str::limit($product->name, 40) }}</h3>
-                        <p class="text-sm text-gray-600 mb-2">{{ $product->vendor->store_name }}</p>
+                        <p class="text-sm text-gray-600 mb-2">{{ $product->vendor->shop_name }}</p>
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-lg font-bold">ZMW {{ number_format($product->price, 2) }}</span>
                             <span class="text-sm {{ $product->quantity < 10 ? 'text-red-600' : 'text-gray-600' }}">Stock: {{ $product->quantity }}</span>

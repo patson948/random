@@ -25,3 +25,5 @@ class CartItem {
   double get subtotal => product.price * quantity;
 }
 
+
+

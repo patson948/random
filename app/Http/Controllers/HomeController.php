@@ -12,26 +12,26 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        // Get new arrivals (latest products)
-        $newArrivals = Product::with(['category', 'reviews'])
-            ->where('is_active', true)
+        // Get new arrivals (latest products) - optimized with eager loading
+        $newArrivals = Product::active()
+            ->withCommonRelations()
             ->latest()
             ->take(8)
             ->get();
 
-        // Get deals (products with significant discounts)
-        $deals = Product::with(['category', 'reviews'])
-            ->where('is_active', true)
-            ->whereNotNull('compare_price')
+        // Get deals (products with significant discounts) - optimized
+        $deals = Product::active()
+            ->onSale()
+            ->withCommonRelations()
             ->whereRaw('(compare_price - price) / compare_price * 100 >= 30')
             ->orderByRaw('(compare_price - price) / compare_price DESC')
             ->take(12)
             ->get();
 
-        // Get top selling products (based on order items count or featured)
-        $topSelling = Product::with(['category', 'reviews'])
-            ->where('is_active', true)
-            ->where('is_featured', true)
+        // Get top selling products (featured) - optimized
+        $topSelling = Product::active()
+            ->featured()
+            ->withCommonRelations()
             ->take(4)
             ->get();
 
@@ -47,9 +47,9 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Get fashion category products
-        $fashionProducts = Product::with(['category', 'reviews'])
-            ->where('is_active', true)
+        // Get fashion category products - optimized
+        $fashionProducts = Product::active()
+            ->withCommonRelations()
             ->whereHas('category', function($query) {
                 $query->whereIn('name', ['Fashion', 'Men', 'Women', 'Clothing']);
             })
@@ -129,7 +129,7 @@ class HomeController extends Controller
         $ctaBanners = HomeSection::ctaBanners()->get();
 
         // Get top bar message
-        $topBar = HomeSection::topBar();
+        $topBar = HomeSection::topBar()->first();
 
         return view('index', compact('newArrivals', 'deals', 'topSelling', 'featuredCategories', 'navCategories', 'fashionProducts', 'stats', 'heroSlides', 'ctaBanners', 'topBar'));
     }

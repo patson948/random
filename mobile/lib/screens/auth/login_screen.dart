@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 // Logo/Title
                 const Text(
-                  'Welcome Back',
+                  'Olandex',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -167,4 +167,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
 

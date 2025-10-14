@@ -66,7 +66,7 @@
                         </div>
                         <div>
                             <h3 class="font-semibold mb-1">Phone</h3>
-                            <p class="text-gray-600 text-sm">+260 XXX XXX XXX<br>Mon-Fri: 8am - 6pm</p>
+                            <p class="text-gray-600 text-sm">+260 760 472 270<br>Mon-Fri: 8am - 6pm</p>
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@
                         </div>
                         <div>
                             <h3 class="font-semibold mb-1">Email</h3>
-                            <p class="text-gray-600 text-sm">support@shophub.zm<br>info@shophub.zm</p>
+                            <p class="text-gray-600 text-sm">support@olandex.com<br>info@olandex.coma</p>
                         </div>
                     </div>
                 </div>

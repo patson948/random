@@ -66,7 +66,7 @@
                                     <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                                     <div class="flex-1">
                                         <p class="text-sm font-medium">Vendor pending approval</p>
-                                        <p class="text-xs text-gray-600 mt-1">{{ $vendor->store_name }} is awaiting approval</p>
+                                        <p class="text-xs text-gray-600 mt-1">{{ $vendor->shop_name }} is awaiting approval</p>
                                         <p class="text-xs text-gray-500 mt-1">{{ $vendor->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>

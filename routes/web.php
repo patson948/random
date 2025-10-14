@@ -78,6 +78,10 @@ Route::get('/checkout-demo', function () {
     return view('checkout');
 });
 
+// ==========================================
+// ⚠️ DEVELOPMENT/DEBUG ROUTES - REMOVE IN PRODUCTION
+// ==========================================
+
 // Social Auth Test Route (remove in production)
 Route::get('/social-auth-test', function () {
     if (auth()->check()) {
@@ -133,6 +137,10 @@ Route::get('/categories-demo', function () {
 Route::get('/track-order-demo', function () {
     return view('track-order');
 });
+
+// ==========================================
+// END DEBUG ROUTES
+// ==========================================
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

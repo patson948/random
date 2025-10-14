@@ -31,7 +31,7 @@
                         <div class="w-20 h-20 bg-gray-100 rounded-2xl"></div>
                         <div>
                             <h1 class="text-3xl font-bold">{{ $product->name }}</h1>
-                            <p class="text-gray-600 mt-1">{{ $product->vendor->store_name }} • {{ $product->category->name }}</p>
+                            <p class="text-gray-600 mt-1">{{ $product->vendor->shop_name }} • {{ $product->category->name }}</p>
                             <div class="flex items-center gap-2 mt-2">
                                 @if($product->is_active)
                                     <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Active</span>
@@ -137,7 +137,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Vendor</p>
-                                <p class="font-semibold mt-1">{{ $product->vendor->store_name }}</p>
+                                <p class="font-semibold mt-1">{{ $product->vendor->shop_name }}</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Price</p>

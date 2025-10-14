@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Title
                 const Text(
-                  'Create Account',
+                  'Join Olandex',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -231,4 +231,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+
 

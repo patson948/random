@@ -127,7 +127,7 @@
                                                value="{{ $vendor->id }}" 
                                                {{ request('vendor') == $vendor->id ? 'checked' : '' }}
                                                class="w-5 h-5 text-black">
-                                        <span class="text-sm">{{ $vendor->shop_name ?? $vendor->store_name }}</span>
+                                        <span class="text-sm">{{ $vendor->shop_name }}</span>
                                     </label>
                                     @endforeach
                                 </div>

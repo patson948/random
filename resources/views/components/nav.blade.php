@@ -1,3 +1,4 @@
+<!-- Navigation -->
 <nav class="bg-white border-b sticky top-0 z-50" x-data="{ mobileMenu: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
@@ -8,7 +9,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <a href="/" class="text-2xl font-bold">ShopHub</a>
+                <a href="/" class="flex items-center">
+                    <img src="{{ asset('logo.png') }}" alt="ShopHub" class="h-10 w-auto">
+                </a>
             </div>
             
             <!-- Desktop Menu -->
@@ -17,8 +20,8 @@
                 <a href="/search?category=women" class="text-sm font-medium hover:text-gray-600">Women</a>
                 <a href="/search?category=kids" class="text-sm font-medium hover:text-gray-600">Kids</a>
                 <a href="/search?category=sports" class="text-sm font-medium hover:text-gray-600">Sports</a>
-                <a href="/categories-demo" class="text-sm font-medium hover:text-gray-600">Categories</a>
-                <a href="/search?sale=1" class="text-sm font-medium text-red-600 hover:text-red-700">Sale</a>
+                <a href="{{ route('categories.index') }}" class="text-sm font-medium hover:text-gray-600">Categories</a>
+                <a href="/deals" class="text-sm font-medium text-red-600 hover:text-red-700">Sale</a>
             </div>
 
             <!-- Right Menu -->
@@ -33,27 +36,17 @@
                     </button>
                 </form>
 
-                <!-- Icons -->
+                <!-- Cart Icon -->
                 <a href="{{ route('cart.index') }}" class="relative">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
-                    @php
-                        $cartCount = auth()->check() 
-                            ? \App\Models\Cart::where('user_id', auth()->id())->sum('quantity')
-                            : \App\Models\Cart::where('session_id', session()->getId())->sum('quantity');
-                    @endphp
-                    @if($cartCount > 0)
-                    <span class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ $cartCount }}</span>
+                    @if($cartCount ?? 0 > 0)
+                    <span class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ $cartCount ?? 0 }}</span>
                     @endif
                 </a>
 
-                <a href="/favorites" class="hidden md:block">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                    </svg>
-                </a>
-
+                <!-- User Menu -->
                 @auth
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="flex items-center space-x-2">
@@ -61,7 +54,7 @@
                             <span class="text-sm font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
                         </div>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border">
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border" style="display: none;">
                         <div class="px-4 py-3 border-b">
                             <p class="text-sm font-medium">{{ auth()->user()->name }}</p>
                             <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
@@ -90,6 +83,18 @@
                     </div>
                 </button>
                 @endauth
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenu" class="md:hidden pb-4" style="display: none;">
+            <div class="space-y-2">
+                <a href="/search?category=men" class="block py-2 text-sm font-medium hover:text-gray-600">Men</a>
+                <a href="/search?category=women" class="block py-2 text-sm font-medium hover:text-gray-600">Women</a>
+                <a href="/search?category=kids" class="block py-2 text-sm font-medium hover:text-gray-600">Kids</a>
+                <a href="/search?category=sports" class="block py-2 text-sm font-medium hover:text-gray-600">Sports</a>
+                <a href="{{ route('categories.index') }}" class="block py-2 text-sm font-medium hover:text-gray-600">Categories</a>
+                <a href="/deals" class="block py-2 text-sm font-medium text-red-600 hover:text-red-700">Sale</a>
             </div>
         </div>
     </div>

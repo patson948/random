@@ -10,7 +10,8 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'items.product'])
+        // Optimized query with selective column loading
+        $orders = Order::withCommonRelations()
             ->latest()
             ->paginate(20);
         
@@ -19,9 +20,20 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product.category', 'items.vendor.user']);
+        // Optimized: Load only needed columns
+        $order->load([
+            'user:id,name,email,avatar',
+            'items' => function ($query) {
+                $query->with([
+                    'product:id,name,slug,images,price',
+                    'product.category:id,name,slug',
+                    'vendor:id,shop_name,slug,logo',
+                    'vendor.user:id,name,email'
+                ]);
+            }
+        ]);
         
-        // Calculate statistics
+        // Calculate statistics (use loaded data to avoid additional queries)
         $stats = [
             'items_count' => $order->items->count(),
             'unique_vendors' => $order->items->pluck('vendor_id')->unique()->count(),

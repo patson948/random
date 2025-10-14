@@ -49,6 +49,6 @@ class HomeSection extends Model
 
     public function scopeTopBar($query)
     {
-        return $query->where('type', self::TYPE_TOP_BAR)->active()->first();
+        return $query->where('type', self::TYPE_TOP_BAR)->active();
     }
 }

@@ -75,7 +75,7 @@
                                 <select name="vendor_id" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black @error('vendor_id') border-red-500 @enderror" required>
                                     <option value="">Select Vendor</option>
                                     @foreach($vendors as $vendor)
-                                        <option value="{{ $vendor->id }}" {{ old('vendor_id', $product->vendor_id) == $vendor->id ? 'selected' : '' }}>{{ $vendor->store_name }}</option>
+                                        <option value="{{ $vendor->id }}" {{ old('vendor_id', $product->vendor_id) == $vendor->id ? 'selected' : '' }}>{{ $vendor->shop_name }}</option>
                                     @endforeach
                                 </select>
                                 @error('vendor_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror

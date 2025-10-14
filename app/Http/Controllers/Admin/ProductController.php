@@ -13,28 +13,36 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['vendor', 'category']);
+        $query = Product::with([
+            'vendor:id,shop_name,slug', 
+            'category:id,name,slug'
+        ]);
 
         if ($request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('sku', 'like', '%' . $request->search . '%');
+            $query->search($request->search);
         }
 
         if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
+            $query->byCategory($request->category_id);
         }
 
         if ($request->vendor_id) {
-            $query->where('vendor_id', $request->vendor_id);
+            $query->byVendor($request->vendor_id);
         }
 
         if ($request->status) {
-            $query->where('is_active', $request->status === 'active');
+            if ($request->status === 'active') {
+                $query->active();
+            } else {
+                $query->where('is_active', false);
+            }
         }
 
         $products = $query->latest()->paginate(20);
-        $categories = Category::all();
-        $vendors = Vendor::all();
+        
+        // Optimize: Only load needed columns for filters
+        $categories = Category::select('id', 'name')->orderBy('name')->get();
+        $vendors = Vendor::select('id', 'shop_name')->orderBy('shop_name')->get();
 
         return view('admin.products.index', compact('products', 'categories', 'vendors'));
     }

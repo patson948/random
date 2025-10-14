@@ -16,7 +16,7 @@
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out lg:translate-x-0">
         <!-- Logo -->
         <div class="flex items-center justify-between h-16 px-6 border-b">
-            <a href="/admin/dashboard" class="text-2xl font-bold">ShopHub</a>
+            <a href="/admin/dashboard" class="text-2xl font-bold"><img src="{{ asset('logo.png') }}" alt="Olandex" class="h-8 w-auto"></a>
             <button @click="sidebarOpen = false" class="lg:hidden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

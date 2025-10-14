@@ -13,26 +13,24 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with(['vendor', 'category', 'reviews'])
-            ->where('is_active', true);
+        $query = Product::active()->withCommonRelations();
 
         // Filter by category
         if ($request->filled('category')) {
             $category = Category::where('slug', $request->category)->first();
             if ($category) {
-                $query->where('category_id', $category->id);
+                $query->byCategory($category->id);
             }
         }
 
         // Filter by featured
         if ($request->filled('featured')) {
-            $query->where('is_featured', true);
+            $query->featured();
         }
 
         // Filter by on sale
         if ($request->filled('sale')) {
-            $query->whereNotNull('compare_price')
-                  ->whereRaw('compare_price > price');
+            $query->onSale();
         }
 
         // Sort
@@ -45,7 +43,7 @@ class ProductController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'popular':
-                $query->withCount('reviews')->orderBy('reviews_count', 'desc');
+                $query->orderBy('reviews_count', 'desc');
                 break;
             case 'newest':
             default:
@@ -54,19 +52,34 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(20)->withQueryString();
-        $categories = Category::where('is_active', true)->get();
+        
+        // Optimize category loading with product count
+        $categories = Category::where('is_active', true)
+            ->withCount('products')
+            ->orderBy('name')
+            ->get();
 
         return view('search-results', compact('products', 'categories'));
     }
 
     public function show(Product $product): View
     {
-        $product->load(['vendor', 'category', 'reviews.user']);
+        // Optimize: Load relations with specific columns
+        $product->load([
+            'vendor:id,shop_name,slug,logo',
+            'category:id,name,slug',
+            'reviews' => function ($query) {
+                $query->latest()
+                      ->with('user:id,name,avatar')
+                      ->take(10);
+            }
+        ]);
         
-        // Get related products
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        // Get related products - optimized
+        $relatedProducts = Product::active()
+            ->byCategory($product->category_id)
             ->where('id', '!=', $product->id)
-            ->where('is_active', true)
+            ->withCommonRelations()
             ->limit(4)
             ->get();
 

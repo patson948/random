@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div class="col-span-2">
-                <h3 class="text-2xl font-bold mb-4">ShopHub</h3>
+                <h3 class="text-2xl font-bold mb-4">Olandex</h3>
                 <p class="text-gray-600 mb-6">We have clothes that suits your style and which you're proud to wear. From women to men.</p>
                 <div class="flex gap-4">
                     <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-200 transition">
@@ -49,7 +49,7 @@
         </div>
 
         <div class="border-t pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
-            <p>ShopHub © 2000-{{ date('Y') }}, All Rights Reserved</p>
+            <p>olandex © 2000-{{ date('Y') }}, All Rights Reserved</p>
             <div class="flex gap-4 mt-4 md:mt-0">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" class="h-6">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6">

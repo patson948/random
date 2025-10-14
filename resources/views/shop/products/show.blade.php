@@ -285,7 +285,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Vendor</span>
-                        <span class="font-medium">{{ $product->vendor->store_name }}</span>
+                        <span class="font-medium">{{ $product->vendor->shop_name }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">SKU</span>

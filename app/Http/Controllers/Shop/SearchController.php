@@ -13,47 +13,36 @@ class SearchController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with(['vendor', 'category', 'reviews'])
-            ->where('is_active', true);
+        $query = Product::active()->withCommonRelations();
 
-        // Search by keyword
+        // Search by keyword - optimized
         if ($request->filled('q')) {
-            $searchTerm = $request->q;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhere('sku', 'like', "%{$searchTerm}%");
-            });
+            $query->search($request->q);
         }
 
         // Filter by category
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $query->byCategory($request->category);
         }
 
         // Filter by vendor
         if ($request->filled('vendor')) {
-            $query->where('vendor_id', $request->vendor);
+            $query->byVendor($request->vendor);
         }
 
         // Filter by price range
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+        if ($request->filled('min_price') || $request->filled('max_price')) {
+            $query->priceRange($request->min_price, $request->max_price);
         }
 
-        // Filter by rating
+        // Filter by rating (optimized with having clause on already loaded avg)
         if ($request->filled('rating')) {
-            $query->whereHas('reviews', function ($q) use ($request) {
-                $q->havingRaw('AVG(rating) >= ?', [$request->rating]);
-            });
+            $query->having('reviews_avg_rating', '>=', $request->rating);
         }
 
         // Filter by availability
         if ($request->filled('in_stock') && $request->in_stock == '1') {
-            $query->where('quantity', '>', 0);
+            $query->inStock();
         }
 
         // Sort
@@ -66,8 +55,7 @@ class SearchController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'popular':
-                $query->withCount('reviews')
-                      ->orderBy('reviews_count', 'desc');
+                $query->orderBy('reviews_count', 'desc');
                 break;
             case 'newest':
             default:
@@ -77,11 +65,16 @@ class SearchController extends Controller
 
         $products = $query->paginate(20)->withQueryString();
 
-        // Get filter options
+        // Get filter options - optimized
         $categories = Category::where('is_active', true)
             ->withCount('products')
+            ->orderBy('name')
             ->get();
-        $vendors = Vendor::where('is_approved', true)->get();
+            
+        $vendors = Vendor::where('is_approved', true)
+            ->select('id', 'shop_name', 'slug')
+            ->orderBy('shop_name')
+            ->get();
 
         return view('search-results', compact('products', 'categories', 'vendors'));
     }

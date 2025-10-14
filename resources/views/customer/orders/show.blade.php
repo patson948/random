@@ -137,7 +137,7 @@
                             <div class="flex-1">
                                 <h3 class="font-semibold">{{ $item->product->name }}</h3>
                                 <p class="text-sm text-gray-600 mt-1">{{ $item->product->category->name }}</p>
-                                <p class="text-sm text-gray-600">Sold by {{ $item->vendor->store_name }}</p>
+                                <p class="text-sm text-gray-600">Sold by {{ $item->vendor->shop_name }}</p>
                                 <p class="text-sm text-gray-600 mt-2">Qty: {{ $item->quantity }}</p>
                             </div>
                             <div class="text-right">
