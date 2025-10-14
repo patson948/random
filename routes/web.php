@@ -156,6 +156,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Categories Management
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
     
+    // Home Sections Management
+    Route::resource('home-sections', App\Http\Controllers\Admin\HomeSectionController::class);
+    
     // Customers Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::post('/users/{user}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggleStatus');

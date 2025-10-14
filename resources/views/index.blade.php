@@ -15,6 +15,17 @@
     <!-- Authentication Modals -->
     @include('components.auth-modals')
     <!-- Top Bar -->
+    @if($topBar)
+    <div class="bg-gray-900 text-white text-xs py-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <span>{{ $topBar->title }}</span>
+            <div class="flex gap-4">
+                <span>Help</span>
+                <span>Track Order</span>
+            </div>
+        </div>
+    </div>
+    @else
     <div class="bg-gray-900 text-white text-xs py-2">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <span>Free shipping on orders over ZMW 50,000</span>
@@ -24,6 +35,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Navigation -->
     <nav class="bg-white border-b sticky top-0 z-50" x-data="{ mobileMenu: false }">
@@ -41,11 +53,10 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="/search?category=men" class="text-sm font-medium hover:text-gray-600">Men</a>
-                    <a href="/search?category=women" class="text-sm font-medium hover:text-gray-600">Women</a>
-                    <a href="/search?category=kids" class="text-sm font-medium hover:text-gray-600">Kids</a>
-                    <a href="/search?category=sports" class="text-sm font-medium hover:text-gray-600">Sports</a>
-                    <a href="/categories-demo" class="text-sm font-medium hover:text-gray-600">Categories</a>
+                    @foreach($navCategories->take(5) as $category)
+                    <a href="/search?category={{ strtolower($category->name) }}" class="text-sm font-medium hover:text-gray-600">{{ $category->name }}</a>
+                    @endforeach
+                    <a href="/categories-demo" class="text-sm font-medium hover:text-gray-600">All Categories</a>
                     <a href="/search?sale=1" class="text-sm font-medium text-red-600 hover:text-red-700">Sale</a>
                 </div>
 
@@ -115,11 +126,10 @@
         <!-- Mobile Menu -->
         <div x-show="mobileMenu" class="md:hidden border-t">
             <div class="px-4 py-3 space-y-3">
-                <a href="/search?category=men" class="block text-sm font-medium">Men</a>
-                <a href="/search?category=women" class="block text-sm font-medium">Women</a>
-                <a href="/search?category=kids" class="block text-sm font-medium">Kids</a>
-                <a href="/search?category=sports" class="block text-sm font-medium">Sports</a>
-                <a href="/categories-demo" class="block text-sm font-medium">Categories</a>
+                @foreach($navCategories->take(5) as $category)
+                <a href="/search?category={{ strtolower($category->name) }}" class="block text-sm font-medium">{{ $category->name }}</a>
+                @endforeach
+                <a href="/categories-demo" class="block text-sm font-medium">All Categories</a>
                 <a href="/search?sale=1" class="block text-sm font-medium text-red-600">Sale</a>
             </div>
         </div>
@@ -128,35 +138,7 @@
     <!-- Hero Slider Section -->
     <section class="relative bg-gradient-to-br from-gray-50 to-gray-100" x-data="{ 
         currentSlide: 0,
-        slides: [
-            {
-                badge: 'NEW COLLECTION',
-                title: 'Fashion and offers for everybody',
-                description: 'Discover the latest trends in fashion. Shop from thousands of trusted vendors across Africa.',
-                image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80',
-                gradient: 'from-gray-50 to-gray-100',
-                buttonText: 'Start Shopping',
-                buttonLink: '/search'
-            },
-            {
-                badge: 'HOT DEALS',
-                title: 'Save up to 50% on trending items',
-                description: 'Limited time offers on your favorite brands. Don\'t miss out on these incredible deals!',
-                image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
-                gradient: 'from-red-50 to-orange-50',
-                buttonText: 'Shop Deals',
-                buttonLink: '/deals'
-            },
-            {
-                badge: 'SUMMER COLLECTION',
-                title: 'Fresh styles for the new season',
-                description: 'Explore our curated selection of summer essentials and make this season unforgettable.',
-                image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80',
-                gradient: 'from-blue-50 to-cyan-50',
-                buttonText: 'Explore Collection',
-                buttonLink: '/search?category=summer'
-            }
-        ],
+        slides: @js($heroSlides),
         autoplay: null,
         init() {
             this.autoplay = setInterval(() => {
@@ -349,7 +331,7 @@
                     @forelse($deals as $product)
                     <a href="{{ route('products.show', $product) }}" class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition flex-shrink-0 w-48 snap-start">
                         <div class="aspect-square bg-gray-100 overflow-hidden relative">
-                            <img src="{{ ($product->images && count($product->images) > 0) ? $product->images[0] : 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
+                            <img src="{{ $product->main_image ?? 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
                                  alt="{{ $product->name }}" 
                                  class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                             @if($product->compare_price && $product->compare_price > $product->price)
@@ -443,7 +425,7 @@
                 @forelse($newArrivals->take(8) as $product)
                 <a href="{{ route('products.show', $product) }}" class="group">
                     <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-4 relative">
-                        <img src="{{ ($product->images && count($product->images) > 0) ? $product->images[0] : 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
+                        <img src="{{ $product->main_image ?? 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
                              alt="{{ $product->name }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
@@ -507,7 +489,7 @@
                 @foreach($fashionProducts as $product)
                 <a href="{{ route('products.show', $product) }}" class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition">
                     <div class="aspect-square bg-gray-100 overflow-hidden relative">
-                        <img src="{{ ($product->images && count($product->images) > 0) ? $product->images[0] : 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
+                        <img src="{{ $product->main_image ?? 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80' }}" 
                              alt="{{ $product->name }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     </div>
@@ -530,6 +512,37 @@
    
 
     <!-- CTA Banners -->
+    @if($ctaBanners->count() > 0)
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-6">
+                @foreach($ctaBanners->take(2) as $banner)
+                <div class="relative bg-gradient-to-br {{ $banner->gradient ?? 'from-indigo-500 to-purple-600' }} rounded-3xl overflow-hidden">
+                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="relative z-10 p-8 lg:p-12 text-white">
+                        @if($banner->badge)
+                        <div class="inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full mb-4">{{ $banner->badge }}</div>
+                        @endif
+                        <h3 class="text-3xl lg:text-4xl font-bold mb-4">{{ $banner->title }}</h3>
+                        @if($banner->description)
+                        <p class="mb-6 text-white/90">{{ $banner->description }}</p>
+                        @endif
+                        @if($banner->button_text && $banner->button_link)
+                        <a href="{{ $banner->button_link }}" class="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
+                            {{ $banner->button_text }}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </a>
+                        @endif
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-1/2 h-1/2 bg-white/10 rounded-tl-full"></div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @else
     <section class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-6">
@@ -569,6 +582,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Newsletter Section -->
     <section class="bg-white py-16">
@@ -629,9 +643,9 @@
                 <div>
                     <h4 class="font-semibold mb-4">SHOP</h4>
                     <ul class="space-y-3 text-sm text-gray-600">
-                        <li><a href="/search?category=men" class="hover:text-black">Men's Fashion</a></li>
-                        <li><a href="/search?category=women" class="hover:text-black">Women's Fashion</a></li>
-                        <li><a href="/search?category=kids" class="hover:text-black">Kids</a></li>
+                        @foreach($navCategories->take(3) as $category)
+                        <li><a href="/search?category={{ strtolower($category->name) }}" class="hover:text-black">{{ $category->name }}</a></li>
+                        @endforeach
                         <li><a href="/search?sale=1" class="hover:text-black">Sale Items</a></li>
                     </ul>
                 </div>
