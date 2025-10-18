@@ -16,9 +16,7 @@
         <div class="max-w-md w-full">
             <!-- Header -->
             <div class="text-center mb-8">
-                <a href="{{ route('home') }}" class="inline-block mb-6">
-                    <h2 class="text-3xl font-bold text-black">ShopHub</h2>
-                </a>
+                
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Forgot Password?</h1>
                 <p class="text-lg text-gray-600">No problem! Enter your email and we'll send you a reset link.</p>
             </div>
@@ -107,18 +105,7 @@
                 </div>
             </div>
 
-            <!-- Back to Home -->
-            <div class="mt-8 text-center">
-                <a 
-                    href="{{ route('home') }}" 
-                    class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition font-medium"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Home
-                </a>
-            </div>
+            
         </div>
     </div>
 </body>

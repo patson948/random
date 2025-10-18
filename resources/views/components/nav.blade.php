@@ -10,7 +10,8 @@
                     </svg>
                 </button>
                 <a href="/" class="flex items-center">
-                    <img src="{{ asset('logo.png') }}" alt="ShopHub" class="h-10 w-auto">
+                    <img src="{{ asset('logo.png') }}" alt="Olandex" class="h-10 w-auto" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span class="text-xl font-bold hidden">Olandex</span>
                 </a>
             </div>
             

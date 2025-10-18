@@ -33,28 +33,48 @@ class AppServiceProvider extends ServiceProvider
 
         // Share cart count with all views
         view()->composer('*', function ($view) {
-            if (auth()->check()) {
-                $cartCount = Cart::where('user_id', auth()->id())->sum('quantity');
-            } else {
-                $cartCount = Cart::where('session_id', session()->getId())->sum('quantity');
+            try {
+                if (auth()->check()) {
+                    $cartCount = Cart::where('user_id', auth()->id())->sum('quantity');
+                } else {
+                    $cartCount = Cart::where('session_id', session()->getId())->sum('quantity');
+                }
+                $view->with('cartCount', $cartCount ?? 0);
+            } catch (\Exception $e) {
+                $view->with('cartCount', 0);
+                \Log::error('Cart count error: ' . $e->getMessage());
             }
-            $view->with('cartCount', $cartCount ?? 0);
         });
 
         // Share admin sidebar counts with admin layout
         view()->composer('layouts.admin', function ($view) {
-            $adminCounts = [
-                'vendors' => Vendor::count(),
-                'pending_vendors' => Vendor::where('is_approved', false)->count(),
-                'products' => Product::count(),
-                'active_products' => Product::where('is_active', true)->count(),
-                'orders' => Order::count(),
-                'pending_orders' => Order::where('status', 'pending')->count(),
-                'categories' => Category::count(),
-                'home_sections' => HomeSection::count(),
-                'active_sections' => HomeSection::where('is_active', true)->count(),
-            ];
-            $view->with('adminCounts', $adminCounts);
+            try {
+                $adminCounts = [
+                    'vendors' => Vendor::count(),
+                    'pending_vendors' => Vendor::where('is_approved', false)->count(),
+                    'products' => Product::count(),
+                    'active_products' => Product::where('is_active', true)->count(),
+                    'orders' => Order::count(),
+                    'pending_orders' => Order::where('status', 'pending')->count(),
+                    'categories' => Category::count(),
+                    'home_sections' => HomeSection::count(),
+                    'active_sections' => HomeSection::where('is_active', true)->count(),
+                ];
+                $view->with('adminCounts', $adminCounts);
+            } catch (\Exception $e) {
+                $view->with('adminCounts', [
+                    'vendors' => 0,
+                    'pending_vendors' => 0,
+                    'products' => 0,
+                    'active_products' => 0,
+                    'orders' => 0,
+                    'pending_orders' => 0,
+                    'categories' => 0,
+                    'home_sections' => 0,
+                    'active_sections' => 0,
+                ]);
+                \Log::error('Admin counts error: ' . $e->getMessage());
+            }
         });
     }
 }

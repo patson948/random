@@ -53,6 +53,14 @@ class VendorSeeder extends Seeder
         ];
 
         foreach ($vendors as $vendorData) {
+            // Check if user already exists
+            $existingUser = User::where('email', $vendorData['email'])->first();
+            
+            if ($existingUser) {
+                $this->command->info("   ⚠️ User already exists: {$vendorData['shop_name']} ({$vendorData['email']})");
+                continue;
+            }
+
             // Create user account for vendor
             $user = User::create([
                 'name' => $vendorData['name'],
@@ -63,16 +71,21 @@ class VendorSeeder extends Seeder
                 'email_verified_at' => now(),
             ]);
 
-            // Create vendor profile
-            Vendor::create([
-                'user_id' => $user->id,
-                'shop_name' => $vendorData['shop_name'],
-                'slug' => Str::slug($vendorData['shop_name']),
-                'description' => $vendorData['description'],
-                'phone' => $vendorData['phone'],
-                'commission_rate' => $vendorData['commission_rate'],
-                'is_approved' => true,
-            ]);
+            // Check if vendor profile already exists
+            $existingVendor = Vendor::where('user_id', $user->id)->first();
+            
+            if (!$existingVendor) {
+                // Create vendor profile
+                Vendor::create([
+                    'user_id' => $user->id,
+                    'shop_name' => $vendorData['shop_name'],
+                    'slug' => Str::slug($vendorData['shop_name']),
+                    'description' => $vendorData['description'],
+                    'phone' => $vendorData['phone'],
+                    'commission_rate' => $vendorData['commission_rate'],
+                    'is_approved' => true,
+                ]);
+            }
 
             $this->command->info("   ✓ {$vendorData['shop_name']} ({$vendorData['email']})");
         }

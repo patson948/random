@@ -19,10 +19,14 @@ class CartController extends Controller
             return $item->product->price * $item->quantity;
         });
 
+        $itemCount = $cartItems->sum('quantity');
+
         return response()->json([
             'items' => $cartItems,
-            'total' => $total,
-            'count' => $cartItems->sum('quantity'),
+            'total' => round($total, 2),
+            'count' => $itemCount,
+            'item_count' => $itemCount, // For mobile app compatibility
+            'cart_count' => $itemCount, // Alternative field name
         ]);
     }
 
@@ -35,6 +39,13 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
+        // Check if product is active
+        if (!$product->is_active) {
+            return response()->json([
+                'message' => 'Product is not available',
+            ], 400);
+        }
+
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 'message' => 'Insufficient stock available',
@@ -46,7 +57,16 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            $cartItem->quantity += $request->quantity;
+            $newQuantity = $cartItem->quantity + $request->quantity;
+            
+            // Check if new total quantity exceeds stock
+            if ($product->quantity < $newQuantity) {
+                return response()->json([
+                    'message' => 'Cannot add more items. Insufficient stock available',
+                ], 400);
+            }
+            
+            $cartItem->quantity = $newQuantity;
             $cartItem->save();
         } else {
             $cartItem = Cart::create([
@@ -58,9 +78,15 @@ class CartController extends Controller
 
         $cartItem->load('product');
 
+        // Get updated cart count
+        $cartCount = Cart::where('user_id', $request->user()->id)->sum('quantity');
+
         return response()->json([
             'message' => 'Product added to cart',
             'item' => $cartItem,
+            'cart_count' => $cartCount,
+            'item_count' => $cartCount,
+            'success' => true,
         ], 201);
     }
 
@@ -86,9 +112,15 @@ class CartController extends Controller
 
         $cart->load('product');
 
+        // Get updated cart count
+        $cartCount = Cart::where('user_id', $request->user()->id)->sum('quantity');
+
         return response()->json([
             'message' => 'Cart updated',
             'item' => $cart,
+            'cart_count' => $cartCount,
+            'item_count' => $cartCount,
+            'success' => true,
         ]);
     }
 
@@ -100,8 +132,14 @@ class CartController extends Controller
 
         $cart->delete();
 
+        // Get updated cart count
+        $cartCount = Cart::where('user_id', $request->user()->id)->sum('quantity');
+
         return response()->json([
             'message' => 'Item removed from cart',
+            'cart_count' => $cartCount,
+            'item_count' => $cartCount,
+            'success' => true,
         ]);
     }
 
@@ -111,6 +149,20 @@ class CartController extends Controller
 
         return response()->json([
             'message' => 'Cart cleared',
+            'cart_count' => 0,
+            'item_count' => 0,
+            'success' => true,
+        ]);
+    }
+
+    public function count(Request $request)
+    {
+        $cartCount = Cart::where('user_id', $request->user()->id)->sum('quantity');
+
+        return response()->json([
+            'cart_count' => $cartCount,
+            'item_count' => $cartCount,
+            'count' => $cartCount,
         ]);
     }
 }

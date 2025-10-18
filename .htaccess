@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle static files directly from public folder
+    RewriteCond %{REQUEST_URI} \.(png|jpg|jpeg|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ /public/$1 [L]
+    
+    # Redirect all requests to the public folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /public/$1 [L,QSA]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer\.json|composer\.lock|\.env|\.gitignore|\.htaccess|artisan|package\.json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
